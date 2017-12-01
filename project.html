@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Yale Thinkspace </title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+        <!-- custom CSS -->
+        <link rel="stylesheet" href="static/global.css">
+
+        <!-- Font Awesome -->
+        <script src="https://use.fontawesome.com/db627a6d1a.js"></script>
+    </head>
+    <body>
+
+        <div class="container">
+
+            <br>
+
+            <nav class="navbar sticky-top navbar-expand-lg navbar-light rounded bg-light justify-content-between">
+                <!-- brand name -->
+                <a class="navbar-brand" href="#">
+                    <img src="assets/logos/1.png" width="30" height="30" class="d-inline-block align-top" alt="">
+                    &nbsp;&nbsp;Yale Thinkspace
+                </a>
+                <!-- toggle button -->
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarThinkspace" aria-controls="navbarThinkspace" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <!-- left-aligned links -->
+                <div class="collapse navbar-collapse" id="navbarThinkspace">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownBrowse" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Browse
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownBrowse">
+                                <a class="dropdown-item" href="#">Projects</a>
+                                <a class="dropdown-item" href="#">Users</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Surprise me</a>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">News</a>
+                        </li>
+                    </ul>
+                    <!-- right-aligned links -->
+                    <ul class="navbar-nav ml-auto">
+                        <!-- search form-->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSearch" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-search"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownSearch">
+                                <form class="px-4 py-3">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="searchQuery" placeholder="Search for..." aria-label="Search for...">
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-primary" type="submit">Search</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
+                                        Everything
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2">
+                                        Projects
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="option3">
+                                        Users
+                                        </label>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+                        <!-- sign in form -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSign" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Sign in
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownSign">
+                                <form class="px-4 py-3">
+                                <div class="form-group">
+                                <label for="exampleDropdownFormEmail1">Email address</label>
+                                <input type="email" class="form-control" id="exampleDropdownFormEmail1" placeholder="email@example.com">
+                                </div>
+                                <div class="form-group">
+                                <label for="exampleDropdownFormPassword1">Password</label>
+                                <input type="password" class="form-control" id="exampleDropdownFormPassword1" placeholder="Password">
+                                </div>
+                                <div class="form-check">
+                                <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input">
+                                Remember me
+                                </label>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Sign in</button>
+                                </form>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">New around here? Sign up</a>
+                                <a class="dropdown-item" href="#">Forgot password?</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+
+        <!-- project -->
+        <br><br>
+
+        <div class="inner">
+        <h2>Steeped Coffee</h2>
+        <p class="text-muted">Easiest way to make a cup of coffee, any time, in minutes.</p>
+        </div>
+
+        <div class="row">
+            <!-- left/title side -->
+            <div class="col-sm-8">
+                <img src="assets/cover.jpg" class="img-fluid rounded">
+                <br><br><br>
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">More</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Updates</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Comments</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                        <br>
+                        <p> Ac ut est convallis a urna. Turpis nisl praesent odio pulvinar purus. Eget vitae justo. Sed per elit sed orci sed. Fusce egestas massa. In wisi est. Ipsum consectetuer est porttitor wisi hymenaeos. At non etiam quis sit sagittis. Mattis lectus vulputate. Suspendisse molestie cras. Ut diam sem felis nostra tincidunt risus sit ultrices. In amet aliquet. Quis sollicitudin malesuada. Risus molestie hymenaeos in nec non ligula malesuada praesent. Ullamcorper a turpis. Libero pede leo. Egestas lorem atque. Sit ornare sed. Tortor ac eleifend. Ut at arcu enim erat commodo. Pulvinar non justo. Lectus ut sit ipsum cras sapien tristique montes a. Ut nullam suspendisse leo porttitor vivamus. Nulla duis nulla pharetra metus purus dictum nisl ac metus libero malesuada. Elementum sit pede felis risus wisi vulputate sed fugiat porttitor pellentesque nascetur in cras orci in rutrum faucibus eget dapibus vestibulum mattis velit ultrices integer vehicula mattis donec consectetuer adipiscing.
+                        </p>
+                    </div>
+                    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                    </div>
+                    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                    </div>
+                </div>
+            </div>
+            <!-- panel -->
+            <div class="col-sm-4">
+                <!-- founder grid -->
+                <div class="card" style="border-bottom-0 border-left-0 border-right-0">
+                    <div class="card-body">
+                        <h4 class="card-title">Quick look</h4>
+                        <h5 class="card-text text-muted">Life-cycle: <a href="#" class="badge badge-pill badge-success">Release</a></h5>
+                        <br>
+                        <h5 class="card-text text-muted">What we're looking for:</h5>
+                        <span>Web development, hotdogs, cash</span>
+                        <br><br>
+                        <a href="#" class="btn btn-primary" style="width: 100%">Join</a>
+                        <br style="line-height: 10px;"><br style="line-height: 10px;">
+                        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                            <div class="btn-group mr-2" role="group" aria-label="First group">
+                            <button type="button" class="btn btn-secondary">1</button>
+                            <button type="button" class="btn btn-secondary">2</button>
+                            <button type="button" class="btn btn-secondary">3</button>
+                            <button type="button" class="btn btn-secondary">4</button>
+                            </div>
+                            <div class="btn-group mr-2" role="group" aria-label="Second group">
+                            <button type="button" class="btn btn-secondary">5</button>
+                            <button type="button" class="btn btn-secondary">6</button>
+                            <button type="button" class="btn btn-secondary">7</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="card" style="">
+                    <div class="card-body">
+                        <h4 class="card-title">Founders</h4>
+                        <div class="row justify-content-center">
+                            <div class="col-sm">
+                                <div>
+                                </div>
+                                <img src="assets/unnamed.jpg" class="rounded float-left" width="50px" height="50px"><br><br><br>
+                                <span class="text-muted">@feliciachang</span>
+                            </div>
+                            <div class="col-sm">
+                                <img src="assets/unnamed.jpg" class="rounded float-left" width="50px" height="50px"><br>
+                                <span class="text-muted">@feliciachang</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- end container-->
+        </div>
+
+        <br>
+
+        <footer class="bd-footer text-muted">
+            <div class="container">
+                <ul class="bd-footer-links">
+                    <li><a href="https://twitter.com/getbootstrap">About</a></li>
+                    <li><a href="/examples/">Get involved</a></li>
+                    <li><a href="/about/history/">Contact us</a></li>
+                </ul>
+                <p>Founded by Sarim Abbas and Felicia Chang. Maintained with the help of our contributors.</p>
+                <p>Disclaimer: This website is maintained by Yale College students and Yale University is not responsible for its contents.</p>
+                <p>&copy; 2017 Yale Thinkspace - an Undergraduate Organization.</p>
+            </div>
+        </footer>
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    </body>
+</html>
