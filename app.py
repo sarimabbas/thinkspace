@@ -7,6 +7,8 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello():
+    print(os.environ)
+    print(process.env.MONGOLAB_URI)
     return "Hello world!"
 
 if __name__ == "__main__":
