@@ -9,9 +9,9 @@ from models import *
 
 pp = pprint.PrettyPrinter(indent=4)
 
-# connect to the database (currently mongodb, hoping for postgres later)
 app = Flask(__name__)
-print(app.config)
+
+# connect to the database (currently mongodb, hoping for postgres later)
 app.config["DATABASE_URI"] = os.environ.get("MONGODB_URI")
 db = connect(db="thinkspace", host=app.config["DATABASE_URI"])
 
@@ -26,6 +26,11 @@ def hello():
     yalie.save()
 
     return "Hello world! {}".format(TextPost.objects.count())
+
+@app.route('/<string:path>', methods=['GET'])
+def root(path):
+    return 'You requested: /' + path
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
