@@ -12,9 +12,8 @@ pp = pprint.PrettyPrinter(indent=4)
 # connect to the database (currently mongodb, hoping for postgres later)
 app = Flask(__name__)
 print(app.config)
-DATABASE_URI = os.environ.get("MONGODB_URI")
+app.config["DATABASE_URI"] = os.environ.get("MONGODB_URI")
 db = connect(db="thinkspace", host=DATABASE_URI)
-
 
 @app.route("/")
 def hello():
@@ -22,6 +21,9 @@ def hello():
     post1 = TextPost(title='Using MongoEngine', content='See the tutorial')
     post1.tags = ['mongodb', 'mongoengine']
     post1.save()
+
+    yalie = YaleStudent(email="hello@yale.edu", first_name="Sar", last_name="Abb", net_id="sa857")
+    yalie.save()
 
     return "Hello world! {}".format(TextPost.objects.count())
 

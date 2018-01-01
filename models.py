@@ -9,3 +9,12 @@ class BlogPost(Document):
 
 class TextPost(BlogPost):
     content = StringField(required=True)
+
+class User(Document):
+    email = StringField(required=True)
+    first_name = StringField(max_length=50)
+    last_name = StringField(max_length=50)
+    meta = {'allow_inheritance': True}
+
+class YaleStudent(User):
+    net_id = StringField(required=True, max_length=10)
