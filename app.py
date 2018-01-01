@@ -10,9 +10,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    pp.pprint(os.environ)
-    pp.pprint(process.env.MONGOLAB_URI)
-    return "Hello world!"
+    return "Hello world!: {} {}".format(os.environ, process.env)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
