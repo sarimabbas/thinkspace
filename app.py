@@ -13,7 +13,7 @@ pp = pprint.PrettyPrinter(indent=4)
 app = Flask(__name__)
 print(app.config)
 DATABASE_URI = os.environ.get("MONGODB_URI")
-db = connect(db="thinkspace", DATABASE_URI)
+db = connect(db="thinkspace", host=DATABASE_URI)
 
 
 @app.route("/")
