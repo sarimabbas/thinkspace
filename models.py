@@ -1,3 +1,5 @@
+from mongoengine import *
+
 class BlogPost(Document):
     title = StringField(required=True, max_length=200)
     posted = DateTimeField(default=datetime.datetime.utcnow)
