@@ -4,7 +4,7 @@ import json
 import pprint
 
 from flask import Flask
-from flask.ext import restful
+from flask_restful import reqparse, abort, Api, Resource
 
 from mongoengine import *
 from models import *
