@@ -20,10 +20,10 @@ class User(Document):
     first_name = StringField(max_length=50)
     last_name = StringField(max_length=50)
     image = ImageField()
-    projects = ListField(StringField())
     links = EmbeddedDocumentField(Links)
+    projects = ListField(ReferenceField("Project")) # as per docs, undefined documents are quoted
     hearts = IntField()
-    hearted = ListField(ReferenceField(Project))
+    hearted = ListField(ReferenceField("Project"))
     created = DateTimeField(default=datetime.datetime.utcnow)
     meta = {'allow_inheritance': True}
 
