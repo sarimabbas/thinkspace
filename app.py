@@ -21,7 +21,7 @@ db = connect(db="thinkspace", host=app.config["DATABASE_URI"])
 # client
 @app.route("/")
 def index():
-    return "Hello world!
+    return "Hello world!"
 
 # API
 class Test(Resource):
