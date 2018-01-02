@@ -16,6 +16,7 @@ app = Flask(__name__)
 api = Api(app)
 
 # connect to the database (currently mongodb, hoping for postgres later)
+app.config["DATABASE_URI"] = os.environ.get("MONGODB_URI")
 db = connect(db="thinkspace", host=app.config["DATABASE_URI"])
 
 # client
