@@ -12,7 +12,7 @@ from models import *
 pp = pprint.PrettyPrinter(indent=4)
 
 app = Flask(__name__)
-api = restful.Api(app)
+api = Api(app)
 
 # connect to the database (currently mongodb, hoping for postgres later)
 app.config["DATABASE_URI"] = os.environ.get("MONGODB_URI")
