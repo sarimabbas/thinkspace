@@ -28,8 +28,8 @@ class Test(Resource):
     def get(self):
         return {'hello': 'world'}
 
-api.add_resource(Users, '/api/users')
-api.add_resource(User, '/api/user/<string:username>')
+# api.add_resource(Users, '/api/users')
+# api.add_resource(User, '/api/user/<string:username>')
 api.add_resource(Test, '/api/test')
 
 if __name__ == "__main__":
