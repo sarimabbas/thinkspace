@@ -4,7 +4,7 @@ import sys
 import json
 import pprint
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restful import reqparse, abort, Api, Resource
 
 from mongoengine import *
@@ -20,9 +20,21 @@ app.config["DATABASE_URI"] = os.environ.get("MONGODB_URI")
 db = connect(db="thinkspace", host=app.config["DATABASE_URI"])
 
 # client
+def createTestModels():
+    links = Links(github= "http://github.com/sarimabbas")
+    user = User(email="sarim.abbas@domain.com", username="sarimabbas", first_name="Sarim", last_name="Abbas")
+    user.links = links
+    user.hearts = 30
+    user.save()
+
+    project = Project(title="Steeped Coffee")
+    project.subtitle = "Easiest way to make a cup of coffee, any time, in minutes."
+    project.hearts = 133
+    project.save()
+
 @app.route("/")
 def index():
-    print(User.objects, file=sys.stderr)
+    # createTestModels()
     return "Hello world!"
 
 # API
@@ -55,7 +67,6 @@ api.add_resource(APIUsers, '/api/users')
 api.add_resource(APIUser, '/api/users/<string:doc_id>')
 api.add_resource(APIProjects, '/api/projects')
 api.add_resource(APIProject, '/api/projects/<string:doc_id>')
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

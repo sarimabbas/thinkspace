@@ -41,7 +41,7 @@ class Update(EmbeddedDocument):
     created = DateTimeField(default=datetime.datetime.utcnow)
 
 class Project(Document):
-    title = StringField(max_length=50)
+    title = StringField(max_length=50, required=True)
     subtitle = StringField()
     category = StringField()
     founders = ListField(ReferenceField(User))
