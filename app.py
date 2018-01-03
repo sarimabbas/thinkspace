@@ -12,9 +12,6 @@ import models
 from flask import Flask, g, request
 # flask extension for easy API endpoint creation
 from flask_restful import abort, Api, Resource
-# to parse flask requests
-from webargs import fields, validate
-from webargs.flaskparser import parser, use_args, abort
 # flask extension for authentication
 from flask_httpauth import HTTPBasicAuth
 # ODM for mongodb
