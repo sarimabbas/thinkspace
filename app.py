@@ -256,12 +256,12 @@ def docUpsert(doc, args):
     document:   a model instance from the database
     args:       arguments (usually from request)
     """
-    print(type(args), file=sys.stderr)
     for key in args:
-        print("iterating", file=sys.stderr)
         if key in doc._fields and args[key]:
             if key == "password":
                 doc[key] = helpers.hash(args[key])
+            elif type(args[key]) == type({}):
+                docUpsert(doc[key], args[key])
             else:
                 doc[key] = args[key]
     return attemptSave(doc)
