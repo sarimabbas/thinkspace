@@ -12,9 +12,8 @@ class SiteRoles(EmbeddedDocument):
     admin = BooleanField(default=False)
 
 # extensible class to define permissions, project-centric (which explains the lists)
-# for e.g. adding updates, updating description, adding new members
+# for e.g. adding updates, updating description, adding new users
 class ProjectRoles(EmbeddedDocument):
-    members = ListField(ReferenceField("User"))
     leaders = ListField(ReferenceField("User"))
     founders = ListField(ReferenceField("User"))
 
@@ -29,7 +28,7 @@ class Links(EmbeddedDocument):
 # generic user class
 class User(Document):
     email = EmailField(required=True)
-    username = StringField(max_length=50, required=True)
+    username = StringField(max_length=50, required=True, unique=True)
     password = StringField(required=True)
     first_name = StringField(max_length=50)
     last_name = StringField(max_length=50)
@@ -60,7 +59,7 @@ class Project(Document):
     subtitle = StringField()
     category = StringField()
     users = ListField(ReferenceField(User)) # all users, irrespective of permissions
-    project_roles = ListField(EmbeddedDocumentField(ProjectRoles)) # list of users organised by permissions
+    project_roles = EmbeddedDocumentField(ProjectRoles) # list of users organised by permissions
     comments = ListField(EmbeddedDocumentField(Comment))
     updates = ListField(EmbeddedDocumentField(Update))
     created = DateTimeField(default=datetime.datetime.utcnow)
