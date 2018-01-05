@@ -26,7 +26,7 @@ Four endpoints are exposed:
 `curl -X GET http://ythinkspace.herokuapp.com/api/projects` returns a list of all projects<br>
 `curl -X GET http://ythinkspace.herokuapp.com/api/user/5a4eab42af6a234b83365aa7` returns a particular user
 ### POST (insert a new document)
-`curl -X POST -H "Content-Type: application/json" -d '{"title" : "johndoe", "password" : "123", "email" : "john.doe@example.com"}' http://ythinkspace.herokuapp.com/api/users`
+`curl -X POST -H "Content-Type: application/json" -d '{"username" : "johndoe", "password" : "123", "email" : "john.doe@example.com"}' http://ythinkspace.herokuapp.com/api/users`
 ### PUT (upsert an existing document)
 `curl -X POST -H "Content-Type: application/json" -d '{"title" : "My new project"}' http://ythinkspace.herokuapp.com/api/projects --user johndoe:123`
 ### DELETE (delete a document)
