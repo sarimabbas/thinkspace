@@ -13,13 +13,16 @@ from flask import Flask, g, request
 from flask_restful import Api, Resource
 # flask extension for authentication
 from flask_httpauth import HTTPBasicAuth
+
 # ODM for mongodb
 from mongoengine import *
+
 # parse requests (looks inside query, form and JSON data)
 from datetime import date
 from webargs import validate
 from webargs.flaskparser import parser, abort
 from marshmallow import Schema, fields, pprint
+
 # handle exceptions
 from contextlib import contextmanager
 
