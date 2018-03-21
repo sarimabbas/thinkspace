@@ -2,9 +2,9 @@ import os
 import sys
 import requests
 
-from config import Config                       # config variables
-from flask import Flask, g, request, jsonify    # flask web framework
-from flask_httpauth import HTTPBasicAuth        # flask extension for authentication
+from config import Config                                       # config variables
+from flask import Flask, g, request, jsonify, render_template   # flask web framework
+from flask_httpauth import HTTPBasicAuth                        # flask extension for authentication
 
 # database models
 from flask_sqlalchemy import SQLAlchemy
@@ -29,7 +29,7 @@ from helpers import *
 
 ### client
 
-client_base = "http://ythinkspace.herokuapp.com"
+client_base = "http://127.0.0.1:5000/api/v1"
 
 @app.route("/")
 def index():
@@ -41,7 +41,8 @@ def projects():
     payload = "{\n\t\"page\" : 1,\n\t\"per_page\" : 5\n}"
     headers = {'content-type': 'application/json'}
     response = requests.request("GET", url, data=payload, headers=headers)
-    return ""
+    data = response.json()
+    return render_template("projects.html", projects=data)
 
 ## API v1
 
@@ -355,5 +356,4 @@ def handle_auth_error():
     return jsonify({'errors': {"auth": messages}}), 401
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port, threaded=True) # turn off debug for production
+    app.run(threaded=True)

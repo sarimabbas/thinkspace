@@ -8,6 +8,7 @@ class Config(object):
     # flask
     DEBUG = True
     TESTING = True
+    THREADED = True
     
     # json ordering of keys
     JSON_SORT_KEYS = False
