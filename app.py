@@ -35,13 +35,13 @@ client_base = "http://ythinkspace.herokuapp.com"
 def index():
     return "Hello world!"
 
-@app.route("/projects", methods=["GET"])
-def projects():
-    url = client_base + "/projects"
-    payload = "{\n\t\"page\" : 1,\n\t\"per_page\" : 5\n}"
-    headers = {'content-type': 'application/json'}
-    response = requests.request("GET", url, data=payload, headers=headers)
-    return ""
+# @app.route("/projects", methods=["GET"])
+# def projects():
+#     url = client_base + "/projects"
+#     payload = "{\n\t\"page\" : 1,\n\t\"per_page\" : 5\n}"
+#     headers = {'content-type': 'application/json'}
+#     response = requests.request("GET", url, data=payload, headers=headers)
+#     return ""
 
 ## API v1
 
