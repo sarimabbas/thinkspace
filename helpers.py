@@ -19,6 +19,9 @@ def exception2json(e):
     return output
 
 def mongo2json(model_objects):
+    """
+    
+    """
     json_data = model_objects.to_json()
     dicts = json.loads(json_data)
     return dicts

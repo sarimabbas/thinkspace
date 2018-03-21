@@ -1,66 +1,120 @@
-import datetime
-from mongoengine import *
+from app import db
+from datetime import datetime
 
-# EmbeddedDocument : cannot exist independently
-# ReferenceField : allows reuse / referencing of a class
-# Inherited Classes : allows specialisation of a class
+# a helper table that matches projects to its members
+project_member = db.Table('project_member',
+    db.Column('project_id', db.Integer(), db.ForeignKey('project.id'), primary_key=True),
+    db.Column('user_id', db.Integer(), db.ForeignKey('user.id'), primary_key=True)
+)
 
-# extensible class to define permissions, user-centric
-# for e.g. grant advanced API access, admin privileges etc.
-class SiteRoles(EmbeddedDocument):
-    curator = BooleanField(default=False)
-    admin = BooleanField(default=False)
+# a helper table that matches projects to its administrators
+project_admin = db.Table('project_admin',
+    db.Column('project_id', db.Integer(), db.ForeignKey('project.id'), primary_key=True),
+    db.Column('user_id', db.Integer(), db.ForeignKey('user.id'), primary_key=True)
+)
 
-# extensible class to define permissions, project-centric (which explains the lists)
-# for e.g. adding updates, updating description, adding new users
-class ProjectRoles(EmbeddedDocument):
-    leaders = ListField(ReferenceField("User"))
-    founders = ListField(ReferenceField("User"))
+# a helper table that matches projects to the users that hearted it
+project_heart = db.Table('project_heart',
+    db.Column('project_id', db.Integer(), db.ForeignKey('project.id'), primary_key=True),
+    db.Column('user_id', db.Integer(), db.ForeignKey('user.id'), primary_key=True)
+)
 
-# extensible class to manage external links
-class Links(EmbeddedDocument):
-    github = URLField()
-    linkedin = URLField()
-    facebook = URLField()
-    twitter = URLField()
-    website = URLField()
+# a helper table that mtaches projects to their tags
+project_tag = db.Table('project_tag',
+    db.Column('project_id', db.Integer(), db.ForeignKey('project.id'), primary_key=True),
+    db.Column('tag_id', db.Integer(), db.ForeignKey('tag.id'), primary_key=True)
+)
 
-# generic user class
-class User(Document):
-    email = EmailField(required=True)
-    username = StringField(max_length=50, required=True, unique=True)
-    password = StringField(required=True)
-    first_name = StringField(max_length=50)
-    last_name = StringField(max_length=50)
-    image = ImageField()
-    links = EmbeddedDocumentField(Links)
-    projects = ListField(ReferenceField("Project")) # as per docs, pending definitions are quoted
-    hearts = IntField()
-    hearted = ListField(ReferenceField("Project"))
-    created = DateTimeField(default=datetime.datetime.utcnow)
-    site_roles = EmbeddedDocumentField(SiteRoles)
-    meta = {'allow_inheritance': True}
+# a helper table that matches users to the users that hearted them
+user_heart = db.Table('user_heart',
+    db.Column('hearter_id', db.Integer(), db.ForeignKey('user.id'), primary_key=True),
+    db.Column('heartee_id', db.Integer(), db.ForeignKey('user.id'), primary_key=True)
+)
 
-# extended user class
-class YaleStudent(User):
-    net_id = StringField(required=True, max_length=10)
+class User(db.Model):
+    ## basic
+    id = db.Column(db.Integer(), primary_key=True)
+    first_name = db.Column(db.String())
+    last_name = db.Column(db.String())
+    username = db.Column(db.String(80), index=True, unique=True, nullable=False)
+    email = db.Column(db.String(120), index=True, unique=True, nullable=False)
+    password = db.Column(db.String(), nullable=False)
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    hearts = db.Column(db.Integer(), default=0)
+    site_admin = db.Column(db.Boolean(), default=False, nullable=False)
+    site_curator = db.Column(db.Boolean(), default=False, nullable=False)
+    api_write = db.Column(db.Boolean(), default=False, nullable=False)
+    ## relations
+    #### one to many
+    comments = db.relationship("Comment", backref='user')
+    posts = db.relationship("Post", backref='user')
+    #### many to many
+    hearted_projects = db.relationship("Project", secondary=project_heart)
+    project_member = db.relationship("Project", secondary=project_member)
+    project_admin = db.relationship("Project", secondary=project_admin)
+    #### many to many (self-referential)
+    heartees = db.relationship("User", secondary=user_heart, primaryjoin=id ==
+                               user_heart.c.hearter_id, secondaryjoin=id == user_heart.c.heartee_id)
+    hearters = db.relationship("User", secondary=user_heart, primaryjoin=id ==
+                               user_heart.c.heartee_id, secondaryjoin=id == user_heart.c.hearter_id)
 
-class Comment(EmbeddedDocument):
-    commenter = ReferenceField(User) # what happens when a user is deleted?
-    content = StringField()
-    created = DateTimeField(default=datetime.datetime.utcnow)
+    def __repr__(self):
+        return '<User {}>'.format(self.username)
 
-class Update(EmbeddedDocument):
-    content = StringField()
-    created = DateTimeField(default=datetime.datetime.utcnow)
+class Project(db.Model):
+    ## basic
+    id = db.Column(db.Integer(), primary_key=True)
+    title = db.Column(db.String(), nullable=False)
+    subtitle = db.Column(db.String(), default="")
+    description = db.Column(db.String(), default="")
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    hearts = db.Column(db.Integer(), default=0)
+    ## relations
+    #### many to many
+    tags = db.relationship("Tag", secondary=project_tag)
+    members = db.relationship("User", secondary=project_member)
+    admin = db.relationship("User", secondary=project_admin)
+    hearters = db.relationship("User", secondary=project_heart)
+    #### one to many (with backrefs for ease of use)
+    comments = db.relationship("Comment", backref='project')
+    posts = db.relationship("Post", backref='project')
 
-class Project(Document):
-    title = StringField(max_length=40, required=True)
-    subtitle = StringField()
-    category = StringField()
-    users = ListField(ReferenceField(User)) # all users, irrespective of permissions
-    project_roles = EmbeddedDocumentField(ProjectRoles) # list of users organised by permissions
-    comments = ListField(EmbeddedDocumentField(Comment))
-    updates = ListField(EmbeddedDocumentField(Update))
-    created = DateTimeField(default=datetime.datetime.utcnow)
-    hearts = IntField()
+    def __repr__(self):
+        return '<Project {}>'.format(self.id)
+
+class Comment(db.Model):
+    ## basic
+    id = db.Column(db.Integer(), primary_key=True)
+    content = db.Column(db.String(), nullable=False)
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    ## relations
+    #### one to many helpers
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)         # allows for comment.user
+    project_id = db.Column(db.Integer(), db.ForeignKey('project.id'), nullable=False)   # allows for comment.project
+
+    def __repr__(self):
+        return '<Comment {}>'.format(self.id)
+
+class Post(db.Model):
+    ## basic
+    id = db.Column(db.Integer(), primary_key=True)
+    content = db.Column(db.String(), nullable=False)
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    ## relations
+    #### one to many helpers
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)         # allows for post.user
+    project_id = db.Column(db.Integer(), db.ForeignKey('project.id'), nullable=False)   # allows for post.project
+
+    def __repr__(self):
+        return '<Post {}>'.format(self.id)
+
+class Tag(db.Model):
+    ## basic
+    id = db.Column(db.Integer(), primary_key=True)
+    text = db.Column(db.String(), nullable=False)
+    ## relations
+    #### many to many
+    projects = db.relationship("Project", secondary=project_tag)
+
+    def __repr__(self):
+        return '<Tag {}>'.format(self.text)
