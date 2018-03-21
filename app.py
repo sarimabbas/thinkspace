@@ -1,8 +1,6 @@
 import os
-import re
 import sys
-import json
-import helpers
+import requests
 
 from config import Config                       # config variables
 from flask import Flask, g, request, jsonify    # flask web framework
@@ -27,11 +25,23 @@ migrate = Migrate(app, db)      # Flask-Migrate
 
 import models                   # import the database models (circular import)
 import schemas
+from helpers import *
 
 ### client
+
+client_base = "http://ythinkspace.herokuapp.com"
+
 @app.route("/")
 def index():
     return "Hello world!"
+
+@app.route("/projects", methods=["GET"])
+def projects():
+    url = client_base + "/projects"
+    payload = "{\n\t\"page\" : 1,\n\t\"per_page\" : 5\n}"
+    headers = {'content-type': 'application/json'}
+    response = requests.request("GET", url, data=payload, headers=headers)
+    return ""
 
 ## API v1
 
@@ -40,30 +50,6 @@ api_base = app.config["API_BASE"]
 #### USERS
 
 ###### get users
-
-######## validators
-
-def userIdDoesNotExist(val):
-    user = models.User.query.get(val)
-    if user is None:
-        raise ValidationError(
-            "No user exists with this id.")
-
-def usernameDoesNotExist(val):
-    user = models.User.query.filter_by(username=val).first()
-    if user is None:
-        raise ValidationError(
-            "No user exists with this username.")
-
-
-def emailDoesNotExist(val):
-    user = models.User.query.filter_by(email=val).first()
-    if user is None:
-        raise ValidationError(
-            "No user exists with this email address.")
-
-######## arguments
-
 get_users_args = {
     "page" : fields.Int(required=False, missing="1"),
     "per_page" : fields.Int(required=False, missing="2"),
@@ -71,9 +57,6 @@ get_users_args = {
     "username": fields.Str(required=False, validate=usernameDoesNotExist),
     "email": fields.Str(required=False, validate=[validate.Email(), emailDoesNotExist])
 }
-
-######## endpoint
-
 @app.route(api_base + "/users", methods=["GET"])
 @use_args(get_users_args)
 def getUsers(args):
@@ -96,23 +79,6 @@ def getUsers(args):
         return jsonify(result.data)
 
 ###### create new user
-
-######## validator methods
-
-def usernameExists(val):
-    user = models.User.query.filter_by(username=val).first()
-    if user is not None:
-        raise ValidationError(
-            "A user already exists with this username.")
-
-def emailExists(val):
-    user = models.User.query.filter_by(email=val).first()
-    if user is not None:
-        raise ValidationError(
-            "A user already exists with this email address.")
-
-######## arguments
-
 create_user_args = {
     "password": fields.Str(required=True, validate=validate.Length(min=6)),
     "username": fields.Str(required=True, validate=usernameExists),
@@ -120,16 +86,13 @@ create_user_args = {
     "first_name": fields.Str(required=False),
     "last_name" : fields.Str(required=False)
 }
-
-######## endpoint
-
 @app.route(api_base + "/users", methods=["POST"])
 @use_args(create_user_args)
 def createUser(args):
     user = models.User()            # create new user
     for k, v in args.items():       # update its attributes
         if k == "password":
-            setattr(user, k, helpers.hash(v))
+            setattr(user, k, passwordHash(v))
         else:
             setattr(user, k, v)
     db.session.add(user)            # add to database
@@ -141,9 +104,6 @@ def createUser(args):
 #### USER
 
 ###### get user
-
-######## endpoint
-
 @app.route(api_base + "/users/<int:id>", methods=["GET"])
 def getUser(id):
     try:
@@ -158,18 +118,6 @@ def getUser(id):
     return jsonify(result.data)
 
 ###### update user
-
-######## helper functions
-
-def hasSitePrivileges(username):
-    user = models.User.query.filter_by(username=username).first()
-    if user.site_admin or user.api_write:
-        return True
-    else:
-        return False
-
-######## arguments
-
 update_user_args = {
     "first_name": fields.Str(required=False),
     "last_name": fields.Str(required=False),
@@ -178,9 +126,6 @@ update_user_args = {
     "site_curator": fields.Boolean(required=False),
     "api_write": fields.Boolean(required=False)
 }
-
-######## endpoint
-
 @app.route(api_base + "/users/<int:id>", methods=["PUT"])
 @auth.login_required
 @use_args(update_user_args)
@@ -212,27 +157,12 @@ def updateUser(args, id):
     return jsonify(result.data)
 
 #### PROJECTS
-
 ###### get projects
-
-######## validators
-
-def projectIdDoesNotExist(val):
-    project = models.Project.query.get(val)
-    if project is None:
-        raise ValidationError(
-            "No project exists with this id.")
-
-######## arguments
-
 get_projects_args = {
     "page": fields.Int(required=False, missing="1"),
     "per_page": fields.Int(required=False, missing="2"),
     "id": fields.Int(required=False, validate=projectIdDoesNotExist),
 }
-
-######## endpoint
-
 @app.route(api_base + "/projects", methods=["GET"])
 @use_args(get_projects_args)
 def getProjects(args):
@@ -252,30 +182,12 @@ def getProjects(args):
         return jsonify(result.data)
 
 ###### create new project
-
-######## validator methods
-
-def tagDoesNotExist(val):
-    tags = models.Tag.query.all()
-    tag_strs = []
-    for tag in tags:
-        tag_strs.append(tag.text)
-    for key in val:
-        if key not in tag_strs: 
-            raise ValidationError(
-                "One or more of your chosen tags do not exist.")
-
-######## arguments
-
 create_project_args = {
     "title": fields.Str(required=True),
     "subtitle": fields.Str(required=False),
     "description": fields.Str(required=False),
     "tags": fields.List(fields.Str(), required=False, validate=tagDoesNotExist)
 }
-
-######## endpoint
-
 @app.route(api_base + "/projects", methods=["POST"])
 @auth.login_required
 @use_args(create_project_args)
@@ -303,9 +215,6 @@ def createProject(args):
     return jsonify(result.data)
 
 ###### get project
-
-######## endpoint
-
 @app.route(api_base + "/projects/<int:id>", methods=["GET"])
 def getProject(id):
     try:
@@ -320,28 +229,6 @@ def getProject(id):
     return jsonify(result.data)
 
 ###### update project
-
-######## validators
-
-def manyUsernamesDoNotExist(vals):
-    for val in vals:
-        user = models.User.query.filter_by(username=val).first()
-        if user is None:
-            raise ValidationError(
-                "One or more users with the given usernames do not exist.")
-
-######## helper functions
-
-def hasProjectPrivileges(username, project_id):
-    user = models.User.query.filter_by(username=username).first()
-    project = models.Project.query.options(joinedload('admin')).get(project_id)
-    if user in project.admin:
-        return True
-    else:
-        return False
-
-######## arguments
-
 update_project_args = {
     "title": fields.Str(required=False),
     "subtitle": fields.Str(required=False),
@@ -350,9 +237,6 @@ update_project_args = {
     "members": fields.List(fields.Str(), required=False, validate=manyUsernamesDoNotExist),
     "admin": fields.List(fields.Str(), required=False, validate=manyUsernamesDoNotExist)
 }
-
-######## endpoint
-
 @app.route(api_base + "/projects/<int:id>", methods=["PUT"])
 @auth.login_required
 @use_args(update_project_args)
@@ -443,8 +327,10 @@ def unheartUser(args):
     result = schema.dump([hearter, heartee], many=True)
     return jsonify(result.data)
 
+#### authentication and error handling
+
 @auth.verify_password
-def verify_password(username, password):
+def verifyPassword(username, password):
     """
     Uses HTTP Basic Auth (switch to JWT down the road)
     """
@@ -452,7 +338,7 @@ def verify_password(username, password):
     user = models.User.query.filter_by(username=username).first()
     if user is None:
         return False
-    if helpers.verify(password, user.password):
+    if passwordVerify(password, user.password):
         g.username = username
         return True
     else:
@@ -470,4 +356,4 @@ def handle_auth_error():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port, debug=True, threaded=True) # turn off debug for production
+    app.run(host='0.0.0.0', port=port, threaded=True) # turn off debug for production

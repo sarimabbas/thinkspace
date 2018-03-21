@@ -4,7 +4,6 @@ class Config(object):
     # databases
     SQLALCHEMY_DATABASE_URI = os.environ["DATABASE_URL"] 
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    MONGODB_URI = os.environ["MONGODB_URI"]
 
     # flask
     DEBUG = True
