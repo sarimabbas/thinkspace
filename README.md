@@ -1,5 +1,5 @@
 # Thinkspace
-[![CircleCI](https://circleci.com/gh/sarimabbas/thinkspace.svg?style=svg)](https://circleci.com/gh/sarimabbas/thinkspace)<br>
+[![CircleCI](https://circleci.com/gh/yalethinkspace/thinkspace.svg?style=svg)](https://circleci.com/gh/yalethinkspace/thinkspace)<br>
 <img src="templates/assets/aaron-2.png" width="250px" alt="Logo"><br>
 This repo holds the Thinkspace REST API (and possibly an accompanying web interface).
 
