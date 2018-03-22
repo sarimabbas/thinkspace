@@ -15,12 +15,12 @@
 
 <br>
 
-{% for row in projects | batch(3, '&nbsp;') %}
+{% for row in projects | batch(3) %}
 <div class="card-deck">
     {% for project in row %}
     <div class="card">
         <a href="/projects/{{project.id}}" class="card-link"></a>
-        <img class="card-img-top" src="../static/img/batman.jpg" alt="Card image cap">
+        <img class="card-img-top" src="../static/img/default/project.jpg" alt="Card image cap">
         <div class="card-body">
             <h4 class="card-title">{{project.title}}</h4>
             <h6 class="card-subtitle mb-2 text-muted">{{project.subtitle}}</h6>

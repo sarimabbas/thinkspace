@@ -1,0 +1,141 @@
+{% extends "layout.html" %} {% block title %}Welcome{% endblock %} {% block content %}
+<br>
+<div class="jumbotron">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9">
+                <h1>Find and work on cool projects with other Yalies.</h1>
+                <p>Great ideas in their initial stages are often fragile ones. Yale Thinkspace helps ideas materialize through
+                    a network of people and resources. We also hope to provide informal spaces for pitching, prototyping
+                    projects, and developing new skills.</p>
+                <p>Interested? Sign up or view our about page. Or just scroll below and click through to public projects and
+                    user profiles to see what's cooking.</p>
+                <p>
+                    <a class="btn btn-primary" href="#" role="button">Sign up
+                        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                    </a>
+                    <a class="btn btn-primary" href="#" role="button">Find out more
+                        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                    </a>
+                </p>
+            </div>
+            <div class="col-md">
+                <img class="img-fluid pull-right" src="../static/img/index/cover.png">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 text-md-left">
+        <h3>Featured projects</h3>
+        <span>Click a card to see more information, or leave a heart!</span>
+    </div>
+    <div class="col-md-6 text-md-right">
+        <a href="#" class="btn btn-primary">Browse public projects
+            <i class="fa fa-arrow-right" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+
+<br>
+
+<div class="card-deck">
+
+    <div class="card">
+        <a href="#" class="card-link"></a>
+        <img class="card-img-top" src="assets/batman.jpg" alt="Card image cap">
+        <div class="card-body">
+            <h4 class="card-title">felicia ekjfhkerj</h4>
+            <h6 class="card-subtitle mb-2 text-muted">Advanced AI for better fights</h6>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <a href="#" class="btn btn-outline-danger btn-sm">
+                <i class="fa fa-heart" aria-hidden="true"></i>
+                <span class="badge badge-danger">11</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <a href="#" class="card-link"></a>
+        <img class="card-img-top" src="assets/icecream.gif" alt="Card image cap">
+        <div class="card-body">
+            <h4 class="card-title">Card title</h4>
+            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <a href="#" class="btn btn-outline-danger btn-sm">
+                <i class="fa fa-heart" aria-hidden="true"></i>
+                <span class="badge badge-danger">99</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="card bg-dark text-white h-100">
+        <a href="#" class="card-link"></a>
+        <img class="card-img" src="assets/pillars.jpg">
+        <div class="card-img-overlay">
+            <h4 class="card-title">Card title</h4>
+            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a
+                little bit longer.</p>
+        </div>
+    </div>
+
+
+</div>
+
+<br>
+<br>
+
+<div class="row">
+    <div class="col-md-6 text-md-left">
+        <h3>Rising users</h3>
+        <span>Click a card to see more information, or leave a heart!</span>
+    </div>
+    <div class="col-md-6 text-md-right">
+        <a href="#" class="btn btn-primary">Browse users
+            <i class="fa fa-arrow-right" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+
+<br>
+
+<div class="card-deck">
+    <div class="card">
+        <a href="#" class="card-link"></a>
+        <div class="card-body">
+            <h4 class="card-title">Felicia Chang</h4>
+            <h6 class="card-subtitle mb-2 text-muted">@feltoast</h6>
+            <p class="card-text">CS major. Likes golf.</p>
+            <a href="#" class="btn btn-outline-danger btn-sm">
+                <i class="fa fa-heart" aria-hidden="true"></i>
+                <span class="badge badge-danger">22</span>
+            </a>
+        </div>
+    </div>
+    <div class="card">
+        <a href="#" class="card-link"></a>
+        <div class="card-body">
+            <h4 class="card-title">Sarim Abbas</h4>
+            <h6 class="card-subtitle mb-2 text-muted">@sarimo</h6>
+            <p class="card-text">CS major. Doesn't like math.</p>
+            <a href="#" class="btn btn-outline-danger btn-sm">
+                <i class="fa fa-heart" aria-hidden="true"></i>
+                <span class="badge badge-danger">12</span>
+            </a>
+        </div>
+    </div>
+    <div class="card">
+        <a href="#" class="card-link"></a>
+        <div class="card-body">
+            <h4 class="card-title">Evil Corp.</h4>
+            <h6 class="card-subtitle mb-2 text-muted">@evilcorp</h6>
+            <p class="card-text">Many CS majors. Likes world domination.</p>
+            <a href="#" class="btn btn-outline-danger btn-sm">
+                <i class="fa fa-heart" aria-hidden="true"></i>
+                <span class="badge badge-danger">99</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 class Config(object):
     # databases
@@ -15,3 +16,6 @@ class Config(object):
 
     # API
     API_BASE = "/api/v1"
+    
+    # JWT tokens
+    JWT_SECRET_KEY = "fancydonuts"

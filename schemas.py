@@ -9,6 +9,14 @@ class User(ModelSchema):
         model = models.User
 
 class Project(ModelSchema):
+    comments = fields.Nested("Comment", many=True)
     class Meta:
         ordered = True
         model = models.Project
+
+class Comment(ModelSchema):
+    # over-riding to expand the id's to users
+    user = fields.Nested(User, only=["username", "first_name", "last_name"])
+    class Meta:
+        ordered = True
+        model = models.Comment

@@ -270,14 +270,15 @@ Errors will be thrown when:
 
 The idea is to encapsulate most of the logic on the server side so that minimal work is needed on the client side.
 
-### Heart and Unheart
+### Heart users
 
 Hearts a user on behalf of the authenticated user
 
 * Authentication: required
 * Arguments:
-    1. `heartee` : required. The username for the user to heart
-* Response: a list of both users with updated heart information
+    1. `heartee` : String. Required. The username for the user to heart
+    2. `heart` : Boolean. Required. Whether to heart (true) or unheart (false)
+* Response: a dict of both users with updated heart information
 * Errors are thrown when hearting or unhearting the same user multiple times
 
 Example: 
@@ -288,6 +289,29 @@ curl --request POST \
   --header 'authorization: Basic am9obmRvZTI6aGVsbG9qb2hu' \
   --header 'content-type: application/json' \
   --data '{
-	"heartee" : "sarimabbas"
+	"heartee" : "sarimabbas",
+  "heart" : true
+}'
+```
+
+Hearts a project on behalf of the authenticated user
+
+* Authentication: required
+* Arguments:
+    1. `heartee` : Int. Required. The id for the project to heart
+    2. `heart` : Boolean. Required. Whether to heart (true) or unheart (false)
+* Response: a dict of the project and the user with updated heart information
+* Errors are thrown when hearting or unhearting the same project multiple times
+
+Example: 
+
+```bash
+curl --request POST \
+  --url http://ythinkspace.herokuapp.com/api/v1/project/heart \
+  --header 'authorization: Basic am9obmRvZTI6aGVsbG9qb2hu' \
+  --header 'content-type: application/json' \
+  --data '{
+	"project" : 1,
+  "heart" : true
 }'
 ```

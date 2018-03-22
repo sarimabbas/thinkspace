@@ -1,10 +1,14 @@
 import os
 import sys
+import timeago
 import requests
 
 from config import Config                                       # config variables
 from flask import Flask, g, request, jsonify, render_template   # flask web framework
-from flask_httpauth import HTTPBasicAuth                        # flask extension for authentication
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity
+)
 
 # database models
 from flask_sqlalchemy import SQLAlchemy
@@ -12,18 +16,18 @@ from sqlalchemy.orm import joinedload
 from flask_migrate import Migrate
 
 # parse requests (looks inside query, form and JSON data)
-from datetime import date
+from datetime import date, datetime
 from webargs import validate, fields, ValidationError
 from webargs.flaskparser import parser, abort, use_args
 
 # CONNECTIONS
-app = Flask(__name__)           # Flask
-app.config.from_object(Config)  # config
-auth = HTTPBasicAuth()          # Flask-HTTPauth
-db = SQLAlchemy(app)            # Flask-SQLAlchemy
-migrate = Migrate(app, db)      # Flask-Migrate
+app = Flask(__name__)                   # Flask
+app.config.from_object(Config)          # config
+db = SQLAlchemy(app)                    # Flask-SQLAlchemy
+migrate = Migrate(app, db)              # Flask-Migrate
+jwt = JWTManager(app)
 
-import models                   # import the database models (circular import)
+import models                           # import the database models (circular import)
 import schemas
 from helpers import *
 
@@ -31,9 +35,18 @@ from helpers import *
 
 client_base = "http://ythinkspace.herokuapp.com/api/v1"
 
+def humanReadableTime(timestamp):
+    if timestamp is None or "":
+        old = datetime.now()
+    else:
+        old = datetime.strptime(timestamp[0:19], "%Y-%m-%dT%H:%M:%S")
+    return timeago.format(old, datetime.now())
+
+app.jinja_env.filters['humanReadableTime'] = humanReadableTime
+
 @app.route("/")
 def index():
-    return "Hello world!"
+    return render_template("index.html")
 
 @app.route("/projects", methods=["GET"])
 def projects():
@@ -43,6 +56,13 @@ def projects():
     response = requests.request("GET", url, data=payload, headers=headers)
     data = response.json()
     return render_template("projects.html", projects=data)
+
+@app.route("/projects/<int:id>", methods=["GET"])
+def project(id):
+    url = client_base + "/projects/" + str(id)
+    response = requests.request("GET", url)
+    data = response.json()
+    return render_template("project.html", project=data)
 
 ## API v1
 
@@ -128,7 +148,7 @@ update_user_args = {
     "api_write": fields.Boolean(required=False)
 }
 @app.route(api_base + "/users/<int:id>", methods=["PUT"])
-@auth.login_required
+@jwt_required
 @use_args(update_user_args)
 def updateUser(args, id):
     # check if user exists
@@ -139,12 +159,12 @@ def updateUser(args, id):
         return jsonify({'errors': {"id": messages}}), 422
     # updating protected properties requires site privileges
     if any(key in ["site_admin", "site_curator", "api_write"] for key in args.keys()):
-        if not hasSitePrivileges(auth.username()):
+        if not hasSitePrivileges(get_jwt_identity()):
             messages = ["You do not have permission to modify this user's protected properties."]
             return jsonify({'errors': {"auth": messages}}), 422
     # updating other properties requires the requestor to be the same user
     user = models.User.query.get(id)
-    if(auth.username() != user.username):
+    if(get_jwt_identity() != user.username):
         messages = ["You do not have permission to modify this user's basic properties."]
         return jsonify({'errors': {"auth": messages}}), 422
     # update properties
@@ -190,7 +210,7 @@ create_project_args = {
     "tags": fields.List(fields.Str(), required=False, validate=tagDoesNotExist)
 }
 @app.route(api_base + "/projects", methods=["POST"])
-@auth.login_required
+@jwt_required
 @use_args(create_project_args)
 def createProject(args):
     # create new project and update its basic attributes (not tags)
@@ -204,7 +224,7 @@ def createProject(args):
             query = models.Tag.query.filter_by(text=tag).first()
             project.tags.append(query)
     # update the project's members and admin with the creating user
-    user = models.User.query.filter_by(username=auth.username()).first()
+    user = models.User.query.filter_by(username=get_jwt_identity()).first()
     project.admin.append(user)
     project.members.append(user)
     # add to database
@@ -239,7 +259,7 @@ update_project_args = {
     "admin": fields.List(fields.Str(), required=False, validate=manyUsernamesDoNotExist)
 }
 @app.route(api_base + "/projects/<int:id>", methods=["PUT"])
-@auth.login_required
+@jwt_required
 @use_args(update_project_args)
 def updateProject(args, id):
     # check if project exists
@@ -249,7 +269,7 @@ def updateProject(args, id):
         messages = e.messages
         return jsonify({'errors': {"id": messages}}), 422
     # check if requestor has project edit privileges
-    if not hasProjectPrivileges(auth.username(), id) and not hasSitePrivileges(auth.username()):
+    if not hasProjectPrivileges(get_jwt_identity(), id) and not hasSitePrivileges(get_jwt_identity()):
         messages = ["You do not have permission to modify this project."]
         return jsonify({'errors': {"auth": messages}}), 422
     # update the project's basic properties
@@ -281,79 +301,160 @@ def updateProject(args, id):
 
 ############## Convenience methods
 
-heart_args = {
+heart_user_args = {
+    "heart" : fields.Boolean(required=True),
     "heartee" : fields.Str(required=True, validate=usernameDoesNotExist)
 }
 @app.route(api_base + "/users/heart", methods=["POST"])
-@auth.login_required
-@use_args(heart_args)
+@jwt_required
+@use_args(heart_user_args)
 def heartUser(args):
     # get relevant users
-    hearter = models.User.query.filter_by(username=auth.username()).first()
+    hearter = models.User.query.filter_by(username=get_jwt_identity()).first()
     heartee = models.User.query.filter_by(username=args["heartee"]).first()
-    # check if already hearted
-    if hearter in heartee.hearters:
-        messages = ["You have already hearted this user."]
-        return jsonify({'errors': {"heartee": messages}}), 422
-    # heart
-    heartee.hearters.append(hearter)
-    heartee.hearts += 1
+    if args["heart"] == True:
+        # check if already hearted
+        if hearter in heartee.hearters:
+            messages = ["You have already hearted this user."]
+            return jsonify({'errors': {"heartee": messages}}), 422
+        # heart
+        heartee.hearters.append(hearter)
+        heartee.hearts += 1
+    else:
+        # check if already unhearted
+        if hearter not in heartee.hearters:
+            messages = ["You have already unhearted this user."]
+            return jsonify({'errors': {"heartee": messages}}), 422
+        # unheart
+        heartee.hearters.remove(hearter)
+        heartee.hearts -= 1
     # commit to database
     db.session.commit()
     # return both users
-    schema = schemas.User(only=["hearts", "username", "hearters", "heartees"])
-    result = schema.dump([hearter, heartee], many=True)
-    return jsonify(result.data)
+    schema = schemas.User(only=["id", "hearts", "username", "hearters", "heartees"])
+    result_hearter = schema.dump(hearter)
+    result_heartee = schema.dump(heartee)
+    return jsonify({"hearter" : result_hearter.data, "heartee" : result_heartee.data})
 
-@app.route(api_base + "/users/unheart", methods=["POST"])
-@auth.login_required
-@use_args(heart_args)
-def unheartUser(args):
-    # get relevant users
-    hearter = models.User.query.options(joinedload(
-        'heartees')).filter_by(username=auth.username()).first()
-    heartee = models.User.query.options(joinedload(
-        'hearters')).filter_by(username=args["heartee"]).first()
-    # check if already unhearted
-    if hearter not in heartee.hearters:
-        messages = ["You have already unhearted this user."]
-        return jsonify({'errors': {"heartee": messages}}), 422
-    # unheart
-    heartee.hearters.remove(hearter)
-    heartee.hearts -= 1
+
+heart_project_args = {
+    "heart": fields.Boolean(required=True),
+    "project": fields.Int(required=True, validate=projectIdDoesNotExist)
+}
+
+@app.route(api_base + "/projects/heart", methods=["POST"])
+@jwt_required
+@use_args(heart_project_args)
+def heartProject(args):
+    # get relevant user and project
+    hearter = models.User.query.filter_by(username=get_jwt_identity()).first()
+    project = models.Project.query.get(args["project"])
+    if args["heart"] == True:
+        # check if already hearted
+        if hearter in project.hearters:
+            messages = ["You have already hearted this project."]
+            return jsonify({'errors': {"project": messages}}), 422
+        # heart
+        project.hearters.append(hearter)
+        project.hearts += 1
+    else:
+        # check if already unhearted
+        if hearter not in project.hearters:
+            messages = ["You have already unhearted this project."]
+            return jsonify({'errors': {"project": messages}}), 422
+        # unheart
+        project.hearters.remove(hearter)
+        project.hearts -= 1
     # commit to database
     db.session.commit()
     # return both users
-    schema = schemas.User(only=["hearts", "username", "hearters", "heartees"])
-    result = schema.dump([hearter, heartee], many=True)
+    schema_user = schemas.User(only=["id", "username", "hearted_projects"])
+    schema_project = schemas.Project(only=["id", "title", "hearts", "hearters"])
+    result_user = schema_user.dump(hearter)
+    result_project = schema_project.dump(project)
+    return jsonify({"user" : result_user.data, "project" : result_project.data})
+
+###### create new comment
+create_comment_args = {
+    "content": fields.Str(required=True),
+    "project" : fields.Int(required=True, validate=projectIdDoesNotExist)
+}
+
+@app.route(api_base + "/comments", methods=["POST"])
+@jwt_required
+@use_args(create_comment_args)
+def createComment(args):
+    # get the project and the user
+    project = models.Project.query.get(args["project"])
+    user = models.User.query.filter_by(username=get_jwt_identity()).first()
+    # create a comment
+    comment = models.Comment(content=args["content"], user_id=user.id, project_id=project.id)
+    # add to database
+    db.session.add(comment)
+    db.session.commit()
+    # dump and return
+    schema_comment = schemas.Comment()
+    result = schema_comment.dump(comment)
     return jsonify(result.data)
 
 #### authentication and error handling
 
-@auth.verify_password
-def verifyPassword(username, password):
-    """
-    Uses HTTP Basic Auth (switch to JWT down the road)
-    """
-    g.username = None
-    user = models.User.query.filter_by(username=username).first()
+auth_args = {
+    "username" : fields.Str(required=True, validate=usernameDoesNotExist),
+    "password" : fields.Str(required=True)
+}
+
+@app.route(api_base + "/auth", methods=["POST"])
+@use_args(auth_args)
+def authy(args):
+    # find the username in the databse
+    user = models.User.query.filter_by(username=args["username"]).first()
+    # check if user exists
     if user is None:
-        return False
-    if passwordVerify(password, user.password):
-        g.username = username
-        return True
+        return jsonify(messages=["You were not successfully authenticated."]), 401
+    # check if the password passes authentication
+    if passwordVerify(args["password"], user.password):
+        # create an identity token from the username
+        access_token = create_access_token(identity=args["username"])
+        # return access token
+        return jsonify(access_token=access_token, username=user.username, id=user.id)
     else:
-        return False
+        return jsonify(messages=["You were not successfully authenticated."]), 401
+
+# Using the expired_token_loader decorator, we will now call
+# this function whenever an expired but otherwise valid access
+# token attempts to access an endpoint
+@jwt.expired_token_loader
+def expiredToken():
+    return jsonify({
+        'status': 401,
+        'sub_status': 42,
+        'messages': ['The token has expired']
+    }), 401
+
+
+@jwt.invalid_token_loader
+def invalidToken(arg):
+    # arg is the inbuilt message, but i'm not using it
+    return jsonify({
+        'status': 401,
+        'sub_status': 42,
+        'messages': ['No token was supplied, or token is invalid.']
+    }), 401
+
+@jwt.unauthorized_loader
+def unauthorizedToken(arg):
+    # arg is the inbuilt message, but i'm not using it
+    return jsonify({
+        'status': 401,
+        'sub_status': 42,
+        'messages': ['You were not successfully authenticated.']
+    }), 401
 
 @app.errorhandler(422)
 def handle_validation_error(err):
     exc = err.exc
     return jsonify({'errors': exc.messages}), 422
-
-@auth.error_handler
-def handle_auth_error():
-    messages = ["You were not successfully authenticated."]
-    return jsonify({'errors': {"auth": messages}}), 401
 
 if __name__ == "__main__":
     app.run(threaded=True)
