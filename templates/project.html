@@ -21,7 +21,7 @@
                     aria-selected="true">Description</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="posts-tab" data-toggle="tab" href="#posts" role="tab" aria-controls="posts" aria-selected="false">posts</a>
+                <a class="nav-link" id="posts-tab" data-toggle="tab" href="#posts" role="tab" aria-controls="posts" aria-selected="false">Posts</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="comments-tab" data-toggle="tab" href="#comments" role="tab" aria-controls="comments" aria-selected="false">Comments</a>
@@ -51,14 +51,14 @@
                     <form id="comment_form" , method="post" , action="/comments" data-project-id={{project.id}}>
                         <textarea id="comment_content">Start writing your comment here.</textarea>
                         <br>
-                        <button id="comment_button" class="btn btn-primary">
+                        <button id="comment_button" class="btn btn-primary float-right">
                             <i class="fas fa-comments"></i> Leave a comment
                         </button>
                     </form>
-                    <br>
+                    <br><br><br>
                 </div>
                 <div id="comment-list">
-                    {% for comment in project.comments %}
+                    {% for comment in project.comments | sort(attribute="timestamp", reverse=True)%}
                     <div class='card', data-comment-id={{comment.id}}>
                         <div class='card-body'>
                             <h5 class='card-title'>{{comment.user.first_name}} {{comment.user.last_name}}</h5>

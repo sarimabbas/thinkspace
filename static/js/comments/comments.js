@@ -25,7 +25,7 @@ $(document).ready(function () {
             "url": "/api/v1/comments",
             "method": "POST",
             "headers": {
-                "authorization": "Basic am9obmRvZTI6aGVsbG9qb2hu"
+                "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1MjE4Njg3MjEsIm5iZiI6MTUyMTg2ODcyMSwianRpIjoiM2VhMjVmMjgtMjVmZS00OWI4LTk2YWYtMTQ2ZDAwMzMyNThiIiwiZXhwIjoxNTIxODY5NjIxLCJpZGVudGl0eSI6ImpvaG5kb2UyIiwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.rydlis0kg1AH8DZzOt4n9rWXf3YK100VC-mSQ_WVm3Y"
             },
             "processData": false,
             "contentType": false,
