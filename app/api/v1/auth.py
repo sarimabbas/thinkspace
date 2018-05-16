@@ -1,17 +1,34 @@
-import app.models as models
-import app.schemas as schemas
+###########
+# imports #
+###########
 
-from app import db, jwt
-from app.api.helpers import *
-from app.api import bp
+# blueprint for routing
+from app.api.v1 import bp
 
-from flask import jsonify
+# database models and schemas
+from app import db
+import app.models
+from app.models import models
+from app.models import schemas
+
+# authentication
+from app import jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
+# parsing requests
 from webargs import validate, fields, ValidationError
 from webargs.flaskparser import parser, abort, use_args
-from flask_jwt_extended import get_jwt_identity, create_access_token
+
+# other (security, permissions and validation)
+from flask import jsonify
+from . import helpers
+
+##################
+# return a token #
+##################
 
 auth_args = {
-    "username": fields.Str(required=True, validate=usernameDoesNotExist),
+    "username": fields.Str(required=True, validate=helpers.usernameDoesNotExist),
     "password": fields.Str(required=True)
 }
 
@@ -24,40 +41,10 @@ def authy(args):
     if user is None:
         return jsonify(messages=["You were not successfully authenticated."]), 401
     # check if the password passes authentication
-    if passwordVerify(args["password"], user.password):
+    if helpers.passwordVerify(args["password"], user.password):
         # create an identity token from the username
-        access_token = create_access_token(identity=args["username"])
+        access_token = helpers.create_access_token(identity=args["username"])
         # return access token
         return jsonify(access_token=access_token, username=user.username, id=user.id)
     else:
         return jsonify(messages=["You were not successfully authenticated."]), 401
-
-# Using the expired_token_loader decorator, we will now call
-# this function whenever an expired but otherwise valid access
-# token attempts to access an endpoint
-
-@jwt.expired_token_loader
-def expiredToken():
-    return jsonify({
-        'status': 401,
-        'sub_status': 42,
-        'messages': ['The token has expired']
-    }), 401
-
-@jwt.invalid_token_loader
-def invalidToken(arg):
-    # arg is the inbuilt message, but i'm not using it
-    return jsonify({
-        'status': 401,
-        'sub_status': 42,
-        'messages': ['No token was supplied, or token is invalid.']
-    }), 401
-
-@jwt.unauthorized_loader
-def unauthorizedToken(arg):
-    # arg is the inbuilt message, but i'm not using it
-    return jsonify({
-        'status': 401,
-        'sub_status': 42,
-        'messages': ['You were not successfully authenticated.']
-    }), 401

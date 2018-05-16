@@ -1,18 +1,35 @@
-import app.models as models
-import app.schemas as schemas
+###########
+# imports #
+###########
 
-from app import db, jwt
-from app.api.helpers import *
-from app.api import bp
+# blueprint for routing
+from app.api.v1 import bp
 
-from flask import jsonify
+# database models and schemas
+from app import db
+import app.models
+from app.models import models
+from app.models import schemas
+
+# authentication
+from app import jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
+# parsing requests
 from webargs import validate, fields, ValidationError
 from webargs.flaskparser import parser, abort, use_args
-from flask_jwt_extended import jwt_required, get_jwt_identity
+
+# other (security, permissions and validation)
+from flask import jsonify
+from . import helpers
+
+################
+# heart a user #
+################
 
 heart_user_args = {
     "heart": fields.Boolean(required=True),
-    "heartee": fields.Str(required=True, validate=usernameDoesNotExist)
+    "heartee": fields.Str(required=True, validate=helpers.usernameDoesNotExist)
 }
 
 @bp.route("/users/heart", methods=["POST"])
@@ -47,12 +64,14 @@ def heartUser(args):
     result_heartee = schema.dump(heartee)
     return jsonify({"hearter": result_hearter.data, "heartee": result_heartee.data})
 
+###################
+# heart a project #
+###################
 
 heart_project_args = {
     "heart": fields.Boolean(required=True),
-    "project": fields.Int(required=True, validate=projectIdDoesNotExist)
+    "project": fields.Int(required=True, validate=helpers.projectIdDoesNotExist)
 }
-
 
 @bp.route("/projects/heart", methods=["POST"])
 @jwt_required

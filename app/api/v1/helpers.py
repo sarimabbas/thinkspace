@@ -1,10 +1,30 @@
-import app.models as models
+###########
+# imports #
+###########
 
+# blueprint for routing
+from app.api.v1 import bp
+
+# database models and schemas
+from app import db
+import app.models
+from app.models import models
+from app.models import schemas
 from sqlalchemy.orm import joinedload
+
+# authentication
+from app import jwt
+
+# parsing requests
 from webargs import ValidationError
+
+# other (security, permissions and validation)
+from flask import jsonify
 from passlib.apps import custom_app_context as pwd_context
 
-# security
+############
+# security #
+############
 
 def passwordHash(plaintext):
     return pwd_context.hash(plaintext)
@@ -12,7 +32,43 @@ def passwordHash(plaintext):
 def passwordVerify(plaintext, hashed):
     return pwd_context.verify(plaintext, hashed)
 
-# permissions
+##################
+# authentication #
+##################
+
+# Using the expired_token_loader decorator, we will now call
+# this function whenever an expired but otherwise valid access
+# token attempts to access an endpoint
+
+@jwt.expired_token_loader
+def expiredToken():
+    return jsonify({
+        'status': 401,
+        'sub_status': 42,
+        'messages': ['The token has expired']
+    }), 401
+
+@jwt.invalid_token_loader
+def invalidToken(arg):
+    # arg is the inbuilt message, but i'm not using it
+    return jsonify({
+        'status': 401,
+        'sub_status': 42,
+        'messages': ['No token was supplied, or token is invalid.']
+    }), 401
+
+@jwt.unauthorized_loader
+def unauthorizedToken(arg):
+    # arg is the inbuilt message, but i'm not using it
+    return jsonify({
+        'status': 401,
+        'sub_status': 42,
+        'messages': ['You were not successfully authenticated.']
+    }), 401
+
+###############
+# permissions #
+###############
 
 def hasSitePrivileges(username):
     user = models.User.query.filter_by(username=username).first()
@@ -29,7 +85,9 @@ def hasProjectPrivileges(username, project_id):
     else:
         return False
 
-# validators
+##############
+# validation #
+##############
 
 def userIdDoesNotExist(val):
     user = models.User.query.get(val)
@@ -83,3 +141,12 @@ def emailExists(val):
     if user is not None:
         raise ValidationError(
             "A user already exists with this email address.")
+
+##########
+# errors #
+##########
+
+@bp.errorhandler(422)
+def handle_validation_error(err):
+    exc = err.exc
+    return jsonify({'errors': exc.messages}), 422
