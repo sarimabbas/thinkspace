@@ -1,5 +1,5 @@
-from app import db
 from datetime import datetime
+from app import db
 
 # a helper table that matches projects to its members
 project_member = db.Table('project_member',
@@ -19,7 +19,7 @@ project_heart = db.Table('project_heart',
     db.Column('user_id', db.Integer(), db.ForeignKey('user.id'), primary_key=True)
 )
 
-# a helper table that mtaches projects to their tags
+# a helper table that matches projects to their tags
 project_tag = db.Table('project_tag',
     db.Column('project_id', db.Integer(), db.ForeignKey('project.id'), primary_key=True),
     db.Column('tag_id', db.Integer(), db.ForeignKey('tag.id'), primary_key=True)

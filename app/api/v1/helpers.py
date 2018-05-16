@@ -1,4 +1,6 @@
-import models
+import app.models as models
+
+from sqlalchemy.orm import joinedload
 from webargs import ValidationError
 from passlib.apps import custom_app_context as pwd_context
 

@@ -1,4 +1,5 @@
-import models
+from . import models
+
 from marshmallow_sqlalchemy import ModelSchema
 from marshmallow import Schema, fields, pprint
 from datetime import datetime

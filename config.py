@@ -13,9 +13,6 @@ class Config(object):
     
     # json ordering of keys
     JSON_SORT_KEYS = False
-
-    # API
-    API_BASE = "/api/v1"
     
     # JWT tokens
     JWT_SECRET_KEY = "fancydonuts"
