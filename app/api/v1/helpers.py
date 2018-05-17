@@ -45,7 +45,7 @@ def expiredToken():
     return jsonify({
         'status': 401,
         'sub_status': 42,
-        'messages': ['The token has expired']
+        'messages': ['The token has expired.']
     }), 401
 
 @jwt.invalid_token_loader

@@ -13,7 +13,7 @@ from app.models import schemas
 
 # authentication
 from app import jwt
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 
 # parsing requests
 from webargs import validate, fields, ValidationError
@@ -32,7 +32,7 @@ auth_args = {
     "password": fields.Str(required=True)
 }
 
-@bp.route("/auth", methods=["POST"])
+@bp.route("/auth", methods=["GET"])
 @use_args(auth_args)
 def authy(args):
     # find the username in the databse
@@ -43,7 +43,7 @@ def authy(args):
     # check if the password passes authentication
     if helpers.passwordVerify(args["password"], user.password):
         # create an identity token from the username
-        access_token = helpers.create_access_token(identity=args["username"])
+        access_token = create_access_token(identity=args["username"])
         # return access token
         return jsonify(access_token=access_token, username=user.username, id=user.id)
     else:

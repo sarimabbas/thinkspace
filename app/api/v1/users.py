@@ -10,6 +10,7 @@ from app import db
 import app.models
 from app.models import models
 from app.models import schemas
+from flask_sqlalchemy import SQLAlchemy
 
 # authentication
 from app import jwt
@@ -40,23 +41,25 @@ get_users_args = {
 @bp.route("/users", methods=["GET"])
 @use_args(get_users_args)
 def getUsers(args):
-    schema = schemas.User(exclude=["password"])
+    items = []
     # get specific user
     if any(key in ["id", "username", "password"] for key in args.keys()):
         if "id" in args.keys():
             query = models.User.get(args["id"])
+            items.append(query)
         elif "username" in args.keys():
-            query = models.User.query.filter_by(
-                username=args["username"]).first()
+            query = models.User.query.filter_by(username=args["username"]).first()
+            items.append(query)
         elif "email" in args.keys():
             query = models.User.query.filter_by(email=args["email"]).first()
-        result = schema.dump(query)
-        return jsonify(result.data)
+            items.append(query)
     # get multiple users
     else:
-        query = models.User.query.paginate(
-            args["page"], args["per_page"], False)
+        query = models.User.query.paginate(args["page"], args["per_page"], False)
         items = query.items
+    # return data
+    if items:
+        schema = schemas.User(exclude=["password"])
         result = schema.dump(items, many=True)
         return jsonify(result.data)
 
@@ -154,8 +157,4 @@ def updateUser(args, id):
     result = schema.dump(user)
     return jsonify(result.data)
 
-
-@bp.route("/hello", methods=["GET"])
-def hello():
-    return "HELLO WORLD"
     
