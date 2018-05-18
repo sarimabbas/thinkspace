@@ -11,6 +11,7 @@ import app.models
 from app.models import models
 from app.models import schemas
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_, and_, desc, text
 
 # authentication
 from app import jwt
@@ -30,38 +31,49 @@ from . import helpers
 
 # arguments
 get_users_args = {
+    # pagination
     "page": fields.Int(required=False, missing="1"),
-    "per_page": fields.Int(required=False, missing="2"),
-    "id": fields.Int(required=False, validate=helpers.userIdDoesNotExist),
-    "username": fields.Str(required=False, validate=helpers.usernameDoesNotExist),
-    "email": fields.Str(required=False, validate=[validate.Email(), helpers.emailDoesNotExist])
+    "per_page": fields.Int(required=False, missing="5"),
+    # narrowing the results
+    "search": fields.Str(required=False, missing=False),
+    "sort": fields.Str(required=False, 
+                        validate=lambda val: val in ["hearts", "-hearts", "timestamp", "-timestamp"], 
+                        missing="-timestamp")
 }
 
 # route
 @bp.route("/users", methods=["GET"])
 @use_args(get_users_args)
 def getUsers(args):
-    items = []
-    # get specific user
-    if any(key in ["id", "username", "password"] for key in args.keys()):
-        if "id" in args.keys():
-            query = models.User.get(args["id"])
-            items.append(query)
-        elif "username" in args.keys():
-            query = models.User.query.filter_by(username=args["username"]).first()
-            items.append(query)
-        elif "email" in args.keys():
-            query = models.User.query.filter_by(email=args["email"]).first()
-            items.append(query)
-    # get multiple users
-    else:
-        query = models.User.query.paginate(args["page"], args["per_page"], False)
-        items = query.items
+    # search
+    if args["search"]: # specific search
+        query = models.User.query.filter(or_(
+            models.User.username == args["search"], 
+            models.User.email == args["search"], 
+            models.User.first_name.ilike("%" + args["search"] + "%"),
+            models.User.last_name.ilike("%" + args["search"] + "%")
+        ))
+    else: # broad search
+        query = models.User.query
+    # sorting
+    if args["sort"]:
+        if "-" in args["sort"]:
+            order_arg = args["sort"].replace("-", "")
+            query = query.order_by(desc(text(order_arg)))
+        else:
+            order_arg = args["sort"]
+            query = query.order_by(text(order_arg))
+    # pagination
+    query = query.paginate(args["page"], args["per_page"], False)
     # return data
+    items = []
+    items = query.items
     if items:
         schema = schemas.User(exclude=["password"])
         result = schema.dump(items, many=True)
         return jsonify(result.data)
+    else:
+        return jsonify([])
 
 ###################
 # create new user #
@@ -135,6 +147,7 @@ def updateUser(args, id):
     except ValidationError as e:
         messages = e.messages
         return jsonify({'errors': {"id": messages}}), 422
+    user = models.User.query.get(id)
     # updating protected properties requires site privileges
     if any(key in ["site_admin", "site_curator", "api_write"] for key in args.keys()):
         if not helpers.hasSitePrivileges(get_jwt_identity()):
@@ -142,8 +155,7 @@ def updateUser(args, id):
                 "You do not have permission to modify this user's protected properties."]
             return jsonify({'errors': {"auth": messages}}), 422
     # updating other properties requires the requestor to be the same user
-    user = models.User.query.get(id)
-    if(get_jwt_identity() != user.username):
+    elif(get_jwt_identity() != user.username):
         messages = [
             "You do not have permission to modify this user's basic properties."]
         return jsonify({'errors': {"auth": messages}}), 422

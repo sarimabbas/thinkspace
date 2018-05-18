@@ -29,27 +29,20 @@ from . import helpers
 
 get_projects_args = {
     "page": fields.Int(required=False, missing="1"),
-    "per_page": fields.Int(required=False, missing="2"),
-    "id": fields.Int(required=False, validate=helpers.projectIdDoesNotExist),
+    "per_page": fields.Int(required=False, missing="2")
 }
 
 @bp.route("/projects", methods=["GET"])
 @use_args(get_projects_args)
 def getProjects(args):
-    schema = schemas.Project()
-    # get specific project
-    if any(key in ["id"] for key in args.keys()):
-        if "id" in args.keys():
-            query = models.Project.query.get(args["id"])
-        result = schema.dump(query)
-        return jsonify(result.data)
+    items = []
     # get multiple projects
-    else:
-        query = models.Project.query.paginate(
-            args["page"], args["per_page"], False)
-        items = query.items
-        result = schema.dump(items, many=True)
-        return jsonify(result.data)
+    query = models.Project.query.paginate(args["page"], args["per_page"], False)
+    items = query.items
+    # return data
+    schema = schemas.Project()
+    result = schema.dump(items, many=True)
+    return jsonify(result.data)
 
 ######################
 # create new project #

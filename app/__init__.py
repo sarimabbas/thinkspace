@@ -43,4 +43,7 @@ def register_blueprints(app):
     # with the Flask application instance (app)
     from .api.v1 import bp as api_v1_blueprint
     app.register_blueprint(api_v1_blueprint)
+
+    from .admin import bp as admin_blueprint
+    app.register_blueprint(admin_blueprint)
     

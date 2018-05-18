@@ -98,7 +98,7 @@ def heartProject(args):
         project.hearts -= 1
     # commit to database
     db.session.commit()
-    # return both users
+    # return both user and project
     schema_user = schemas.User(only=["id", "username", "hearted_projects"])
     schema_project = schemas.Project(
         only=["id", "title", "hearts", "hearters"])
