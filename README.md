@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/yalethinkspace/thinkspace-api.svg?style=svg)](https://circleci.com/gh/yalethinkspace/thinkspace-api)
 
-This repo holds the Thinkspace REST API (and possibly an accompanying web interface).
+This repo holds the Thinkspace REST API.
 
 ## Technologies
 * Language: Python 3
