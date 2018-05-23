@@ -20,7 +20,6 @@ jwt = JWTManager()
 
 def create_app(config_class=Config):
     # create and configure the app
-    print("creating app...")
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config_class)
     initialize_extensions(app)

@@ -15,4 +15,4 @@ class Config(object):
     JSON_SORT_KEYS = False
     
     # JWT tokens
-    JWT_SECRET_KEY = "fancydonuts"
+    JWT_SECRET_KEY = os.urandom(24)

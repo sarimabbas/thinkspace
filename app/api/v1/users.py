@@ -35,7 +35,7 @@ get_users_args = {
     "page": fields.Int(required=False, missing="1"),
     "per_page": fields.Int(required=False, missing="5"),
     # narrowing the results
-    "search": fields.Str(required=False, missing=False),
+    "search": fields.Str(required=False),
     "sort": fields.Str(required=False, 
                         validate=lambda val: val in ["hearts", "-hearts", "timestamp", "-timestamp"], 
                         missing="-timestamp")
@@ -46,7 +46,7 @@ get_users_args = {
 @use_args(get_users_args)
 def getUsers(args):
     # search
-    if args["search"]: # specific search
+    if "search" in args: # specific search
         query = models.User.query.filter(or_(
             models.User.username == args["search"], 
             models.User.email == args["search"], 
@@ -56,7 +56,7 @@ def getUsers(args):
     else: # broad search
         query = models.User.query
     # sorting
-    if args["sort"]:
+    if "sort" in args:
         if "-" in args["sort"]:
             order_arg = args["sort"].replace("-", "")
             query = query.order_by(desc(text(order_arg)))
