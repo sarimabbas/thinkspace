@@ -82,6 +82,7 @@ def getUsers(args):
 # arguments
 create_user_args = {
     "password": fields.Str(required=True, validate=validate.Length(min=6)),
+    "repeat_password": fields.Str(required=True, validate=validate.Length(min=6)),
     "username": fields.Str(required=True, validate=helpers.usernameExists),
     "email": fields.Str(required=True, validate=[validate.Email(), helpers.emailExists]),
     "first_name": fields.Str(required=False),
@@ -90,7 +91,7 @@ create_user_args = {
 
 # route
 @bp.route("/users", methods=["POST"])
-@use_args(create_user_args)
+@use_args(create_user_args, validate=lambda args: args["password"] == args["repeat_password"])
 def createUser(args):
     user = models.User()            # create new user
     for k, v in args.items():       # update its attributes
