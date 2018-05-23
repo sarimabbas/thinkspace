@@ -32,3 +32,4 @@ urllib3==1.22
 webargs==3.0.0
 Werkzeug==0.14.1
 wrapt==1.10.11
+gunicorn==19.8.1
