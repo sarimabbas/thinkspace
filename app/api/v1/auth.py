@@ -48,3 +48,11 @@ def authy(args):
         return jsonify(access_token=access_token, username=user.username, id=user.id)
     else:
         return jsonify(messages=["You were not successfully authenticated."]), 401
+
+@bp.route("/whoami", methods=["GET"])
+@jwt_required
+def whoami():
+    user = models.User.query.filter_by(username=get_jwt_identity()).first()
+    schema = schemas.User(exclude=["password"])
+    result = schema.dump(user)
+    return jsonify(result.data)
