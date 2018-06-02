@@ -39,7 +39,7 @@ def auth(args):
     user = models.User.query.filter_by(username=args["username"]).first()
     # check if user exists
     if user is None:
-        return jsonify(errors=["Incorrect username or password."]), 401
+        return jsonify(errors={"password": "User does not exist."}), 401
     # check if the password passes authentication
     if helpers.passwordVerify(args["password"], user.password):
         # create an identity token from the username
@@ -47,7 +47,7 @@ def auth(args):
         # return access token
         return jsonify(access_token=access_token, username=user.username, id=user.id)
     else:
-        return jsonify(errors=["Incorrect username or password."]), 401
+        return jsonify(errors={"password" : "Incorrect password."}), 401
 
 @bp.route("/whoami", methods=["GET"])
 @jwt_required
