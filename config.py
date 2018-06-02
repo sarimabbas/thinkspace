@@ -1,18 +1,13 @@
 import os
 from datetime import timedelta
 
-class Config(object):
-    # databases
+class developmentConfig(object):
     SQLALCHEMY_DATABASE_URI = os.environ["DATABASE_URL"] 
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    JWT_SECRET_KEY = os.urandom(24)
 
-    # flask
-    DEBUG = True
-    TESTING = True
+
+class productionConfig(object):
     THREADED = True
-    
-    # json ordering of keys
-    JSON_SORT_KEYS = False
-    
-    # JWT tokens
+    SQLALCHEMY_DATABASE_URI = os.environ["DATABASE_URL"]
     JWT_SECRET_KEY = os.urandom(24)

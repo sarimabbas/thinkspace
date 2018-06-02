@@ -19,6 +19,17 @@ This repo holds the Thinkspace REST API.
 
 Currently available at: [thinkspace.docs.apiary.io](http://thinkspace.docs.apiary.io)
 
+## Development
+
+Running the following set of commands will start a local Flask server in debug mode. Flask will use the interactive debugger and reloader by default. As per 1.0 documentation, setting ENV and DEBUG in code is discouraged.
+
+```
+cd thinkspace-web
+export FLASK_APP=app
+export FLASK_ENV=development
+flask run
+```
+
 ## How to contribute
 
 1. Fork the [yalethinkspace/thinkspace-web](https://github.com/yalethinkspace/thinkspace-api) repository. Please see GitHub

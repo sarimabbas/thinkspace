@@ -34,12 +34,12 @@ auth_args = {
 
 @bp.route("/auth", methods=["GET"])
 @use_args(auth_args)
-def authy(args):
+def auth(args):
     # find the username in the databse
     user = models.User.query.filter_by(username=args["username"]).first()
     # check if user exists
     if user is None:
-        return jsonify(messages=["You were not successfully authenticated."]), 401
+        return jsonify(errors=["Incorrect username or password."]), 401
     # check if the password passes authentication
     if helpers.passwordVerify(args["password"], user.password):
         # create an identity token from the username
@@ -47,7 +47,7 @@ def authy(args):
         # return access token
         return jsonify(access_token=access_token, username=user.username, id=user.id)
     else:
-        return jsonify(messages=["You were not successfully authenticated."]), 401
+        return jsonify(errors=["Incorrect username or password."]), 401
 
 @bp.route("/whoami", methods=["GET"])
 @jwt_required

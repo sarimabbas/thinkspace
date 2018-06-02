@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import joinedload
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
-from config import Config 
+from config import developmentConfig 
 
 # Create the instances of the Flask extensions in
 # the global scope, but without any arguments passed in.  These instances are not attached
@@ -18,7 +18,7 @@ jwt = JWTManager()
 #### Application Factory Function ####
 ######################################
 
-def create_app(config_class=Config):
+def create_app(config_class=developmentConfig):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config_class)
