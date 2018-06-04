@@ -39,6 +39,7 @@ class User(db.Model):
     username = db.Column(db.String(80), index=True, unique=True, nullable=False)
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
     password = db.Column(db.String(), nullable=False)
+    about = db.Column(db.String(), default="")
     timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
     hearts = db.Column(db.Integer(), default=0)
     site_admin = db.Column(db.Boolean(), default=False, nullable=False)
@@ -66,7 +67,7 @@ class Project(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     title = db.Column(db.String(), nullable=False)
     subtitle = db.Column(db.String(), default="")
-    description = db.Column(db.String(), default="")
+    about = db.Column(db.String(), default="")
     timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
     hearts = db.Column(db.Integer(), default=0)
     ## relations
