@@ -51,7 +51,7 @@ def getProjects(args):
 create_project_args = {
     "title": fields.Str(required=True),
     "subtitle": fields.Str(required=False),
-    "description": fields.Str(required=False),
+    "about": fields.Str(required=False),
     "tags": fields.List(fields.Str(), required=False, validate=helpers.tagDoesNotExist)
 }
 
@@ -105,7 +105,7 @@ def getProject(id):
 update_project_args = {
     "title": fields.Str(required=False),
     "subtitle": fields.Str(required=False),
-    "description": fields.Str(required=False),
+    "about": fields.Str(required=False),
     "tags": fields.List(fields.Str(), required=False, validate=helpers.tagDoesNotExist),
     "members": fields.List(fields.Str(), required=False, validate=helpers.manyUsernamesDoNotExist),
     "admin": fields.List(fields.Str(), required=False, validate=helpers.manyUsernamesDoNotExist)
