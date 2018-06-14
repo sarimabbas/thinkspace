@@ -10,3 +10,6 @@ django-filter
 coreapi
 psycopg2
 dj-database-url
+boto3
+django-storages
+python-decouple
