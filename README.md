@@ -14,14 +14,21 @@ Currently available at: [thinkspace-api.herokuapp.com/docs](http://thinkspace-ap
 
 ## Development
 
-Running the following set of commands will start a local Flask server in debug mode. Flask will use the interactive debugger and reloader by default. As per 1.0 documentation, setting ENV and DEBUG in code is discouraged.
+Stores media files locally.
 
 ```
-cd thinkspace-web
-export FLASK_APP=app
-export FLASK_ENV=development
-flask run
+python manage.py migrate --settings=thinkspace_api.settings.development
+python manage.py runserver --settings=thinkspace_api.settings.development
 ```
+
+## Production
+
+```
+python manage.py migrate --settings=thinkspace_api.settings.production
+git push heroku master
+```
+
+Alternatively you can `git push origin master` and it will auto-deploy to Heroku.
 
 ## How to contribute
 

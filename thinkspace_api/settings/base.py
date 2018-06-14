@@ -96,7 +96,6 @@ SECRET_KEY = config("SECRET_KEY")
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
 # Database
-# https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
