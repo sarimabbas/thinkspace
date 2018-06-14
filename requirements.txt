@@ -5,3 +5,4 @@ Django
 gunicorn
 Markdown
 whitenoise
+django_heroku
