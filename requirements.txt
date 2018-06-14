@@ -7,3 +7,4 @@ Markdown
 whitenoise
 django-heroku
 django-filter
+coreapi
