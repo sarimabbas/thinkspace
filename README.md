@@ -1,23 +1,16 @@
 # Thinkspace
 
-[![CircleCI](https://circleci.com/gh/yalethinkspace/thinkspace-api.svg?style=svg)](https://circleci.com/gh/yalethinkspace/thinkspace-api)
-
 This repo holds the Thinkspace REST API.
 
 ## Technologies
 * Language: Python 3
-* Packages:
-    * Flask with these important extensions:
-        * Flask-HTTPAuth
-        * Flask-SqlAlchemy
-    * webargs
-    * marshmallow
+* Framework: Django with Django Rest Framework
 * Data Storage: Heroku Postgres
 * Deployment: Heroku
 
 ## API documentation
 
-Currently available at: [thinkspace.docs.apiary.io](http://thinkspace.docs.apiary.io)
+Currently available at: [thinkspace-api.herokuapp.com/docs](http://thinkspace-api.herokuapp.com/docs)
 
 ## Development
 

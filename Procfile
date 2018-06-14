@@ -1,1 +1,1 @@
-web: gunicorn wsgi:app -w 4
+web: gunicorn thinkspace_api.wsgi --log-file -
