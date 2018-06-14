@@ -5,5 +5,5 @@ Django
 gunicorn
 Markdown
 whitenoise
-django_heroku
-django_filters
+django-heroku
+django-filter
