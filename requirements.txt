@@ -8,3 +8,5 @@ whitenoise
 django-heroku
 django-filter
 coreapi
+psycopg2
+dj-database-url
