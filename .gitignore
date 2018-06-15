@@ -12,3 +12,7 @@ coverage.xml
 *.pot
 docs/_build/
 *.bak
+*.sqlite3
+media/
+static/
+staticfiles/
