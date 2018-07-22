@@ -18,26 +18,34 @@ from django.urls import path
 from django.conf.urls import url, include
 from django.conf import settings
 from django.conf.urls.static import static
+
 from rest_framework import routers
+from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.documentation import include_docs_urls
+from rest_framework_jwt.views import obtain_jwt_token
+
 from api import views
 
+# create base router
 router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'user-courses', views.CourseViewSet)
-router.register(r'projects', views.ProjectViewSet)
-router.register(r'project-categories', views.ProjectCategoryViewSet)
-router.register(r'project-join-requests', views.ProjectJoinRequestViewSet)
-router.register(r'project-comments', views.ProjectCommentViewSet)
-router.register(r'project-posts', views.ProjectPostViewSet)
-router.register(r'project-tags', views.ProjectTagViewSet)
+router.register(r'users', views.UserViewSet, base_name="user")
+# router.register(r'projects', views.ProjectViewSet)
+# router.register(r'user_courses', views.CourseViewSet)
+# router.register(r'project_categories', views.ProjectCategoryViewSet)
+# router.register(r'project-join-requests', views.ProjectJoinRequestViewSet, base_name='projectjoinrequest')
+# router.register(r'project_comments', views.ProjectCommentViewSet)
+# router.register(r'project_posts', views.ProjectPostViewSet)
+# router.register(r'project_tags', views.ProjectTagViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^docs/', include_docs_urls(title='Thinkspace API', public=False)),
     url(r'^', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^docs/', include_docs_urls(title='Thinkspace API', public=False)),
+    url(r'^browsable_auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^token_auth/', obtain_jwt_token),
 ]
+
+# urlpatterns = format_suffix_patterns(urlpatterns)
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,

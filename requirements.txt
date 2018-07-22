@@ -13,3 +13,10 @@ dj-database-url
 boto3
 django-storages
 python-decouple
+Jinja2
+requests
+s3transfer
+autopep8
+astroid
+pylint
+djangorestframework-jwt

@@ -32,7 +32,7 @@ Alternatively you can `git push origin master` and it will auto-deploy to Heroku
 
 ## How to contribute
 
-1. Fork the [yalethinkspace/thinkspace-web](https://github.com/yalethinkspace/thinkspace-api) repository. Please see GitHub
+1. Fork the [yalethinkspace/thinkspace-api](https://github.com/yalethinkspace/thinkspace-api) repository. Please see GitHub
    [help on forking](https://help.github.com/articles/fork-a-repo) or use this [direct link](https://github.com/yalethinkspace/thinkspace-api/fork) to fork.
 2. Clone your fork to your local machine.
 3. Create a new [local branch](https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/).

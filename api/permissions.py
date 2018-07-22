@@ -13,6 +13,7 @@ READ_ACTIONS = ["list", "retrieve"]
 # convenience functions #
 #########################
 
+
 def CanWriteGeneric(user, obj_with_user_field):
     if user.is_staff:
         return True
@@ -31,6 +32,11 @@ class Nope(permissions.BasePermission):
 #########
 # users #
 #########
+
+
+class IsAuthenticated(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user and request.user.is_authenticated
 
 def CanWriteUser(user, user_obj):
     if user.is_staff:
@@ -51,7 +57,24 @@ class UserWrite(permissions.BasePermission):
 
 class UserHeart(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return request.user.is_authenticated
+        if request.user.is_authenticated:
+            if request.user != obj:
+                return True
+        return False
+
+class UserDestroy(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_authenticated:
+            if request.user == obj:
+                return True
+        return False
+
+class UserUpdate(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_authenticated:
+            if request.user == obj:
+                return True
+        return False
 
 ###########
 # courses #

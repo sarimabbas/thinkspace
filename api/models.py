@@ -9,23 +9,29 @@ from django.db.models.functions import Substr
 def upload_to(instance, filename):
     return "users/{}/{}".format(instance.id, filename)
 
+class UserSiteRole(models.Model):
+    name = models.TextField()
+
+class Course(models.Model):
+    code = models.TextField()
+    name = models.TextField()
+
+    def __str__(self):
+        return "{}".format(self.code)
+
 class User(AbstractUser):
-    hearts = models.IntegerField(default=0, help_text="Yu Yu")
+    hearts = models.IntegerField(default=0)
     hearted_users = models.ManyToManyField("User", related_name="hearted_by", blank=True)
     description = models.TextField(blank=True, null=True)
     links = models.TextField(blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=upload_to)
     is_moderator = models.BooleanField(default=False)
     is_mentor = models.BooleanField(default=False)
-
-class Course(models.Model):
-    code = models.TextField()
-    name = models.TextField()
-    taken_by = models.ManyToManyField(User, related_name="courses", blank=True)
-    user_count = models.IntegerField(default=0)
+    site_roles = models.ManyToManyField(UserSiteRole, related_name="users", blank=True)
+    courses = models.ManyToManyField(Course, related_name="courses", blank=True)
 
     def __str__(self):
-        return "{}".format(self.code)
+        return "{}".format(self.username)
 
 class Project(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)

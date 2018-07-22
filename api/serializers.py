@@ -2,8 +2,10 @@
 # imports #
 ###########
 
-from rest_framework import serializers
 from django.contrib.auth.models import Group
+
+from rest_framework import serializers
+
 from api import models
 from api import permissions
 
@@ -14,11 +16,11 @@ from api import permissions
 # DRF serializers are weird because they either allow fields='' or exclude='',
 # but not both. Usually, this would be fine, but we also want to show
 # related_name fields in our API which correspond to ManyToMany and OneToMany
-# back-references. So we use the BaseSerializer which gives us the
+# back-references. So we create a BaseSerializer which gives us the
 # "extra_fields" meta attribute "extra_fields" is useful because now we can
 # explicitly add related_names
 
-class BaseSerializer(serializers.HyperlinkedModelSerializer):
+class BaseSerializer(serializers.ModelSerializer):
     def get_field_names(self, declared_fields, info):
         expanded_fields = super(BaseSerializer, self).get_field_names(
             declared_fields, info)
@@ -35,6 +37,7 @@ class BaseSerializer(serializers.HyperlinkedModelSerializer):
 # user #
 ########
 
+
 class UserWriteSerializer(BaseSerializer):
     class Meta:
         model = models.User
@@ -48,13 +51,26 @@ class UserWriteSerializer(BaseSerializer):
         user.save()
         return user
 
-class UserReadSerializer(BaseSerializer):
+class UserListRetrieve(BaseSerializer):
     class Meta:
         model = models.User
-        exclude = ["is_superuser", "user_permissions", "groups"]
+        exclude = ["is_superuser", "user_permissions", "groups", "password"]
         extra_fields = ["member_projects", "leader_projects",
                         "hearted_by", "hearted_projects", "join_requests", "courses"]
-        extra_kwargs = {'password': {'write_only': True}}
+
+class UserCreate(BaseSerializer):
+    class Meta:
+        model = models.User
+        fields = ["email", "username", "first_name", "last_name", "password"]
+    
+    def create(self, validated_data):
+        user = models.User.objects.create_user(**validated_data)
+        return user
+
+class UserUpdate(BaseSerializer):
+    class Meta:
+        model = models.User
+        fields = ["email", "first_name", "last_name", "image", "links", "courses"]
 
 ###########
 # courses #
@@ -77,16 +93,17 @@ class ProjectTagSerializer(BaseSerializer):
         extra_fields = ["projects"]
         fields = "__all__"
 
+class ProjectJoinRequestSerializer(BaseSerializer):
+    class Meta:
+        model = models.ProjectJoinRequest
+        fields = "__all__"
+
+
 class ProjectSerializer(BaseSerializer):
     class Meta:
         model = models.Project
         fields = "__all__"
         extra_fields = ["join_requests", "comments", "posts"]
-        
-class ProjectJoinRequestSerializer(BaseSerializer):
-    class Meta:
-        model = models.ProjectJoinRequest
-        fields = "__all__"
 
 class ProjectCommentSerializer(BaseSerializer):
     class Meta:
