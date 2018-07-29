@@ -37,20 +37,6 @@ class BaseSerializer(serializers.ModelSerializer):
 # user #
 ########
 
-
-class UserWriteSerializer(BaseSerializer):
-    class Meta:
-        model = models.User
-        fields = ["username", "password", "email", "first_name", 
-        "last_name", "links", "image", "description"]
-
-    def create(self, validated_data):
-        user = models.User.objects.create_user(username=validated_data["username"],
-                                               password=validated_data["password"],
-                                               email=validated_data["email"])
-        user.save()
-        return user
-
 class UserListRetrieve(BaseSerializer):
     class Meta:
         model = models.User

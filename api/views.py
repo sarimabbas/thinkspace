@@ -42,7 +42,7 @@ class UserViewSet(viewsets.GenericViewSet,
     
     def get_permissions(self):
         permission_classes = []
-        if self.action in ["list", "retrieve"]:
+        if self.action in ["list", "retrieve", "create"]:
             permission_classes = []
         if self.action in ["heart"]:
             permission_classes = [permissions.UserHeart]
@@ -51,7 +51,7 @@ class UserViewSet(viewsets.GenericViewSet,
         if self.action in ["update", "partial_update"]:
             permission_classes = [permissions.UserUpdate]
         return [permission() for permission in permission_classes]
-
+                                                    
     def get_serializer_class(self):
         if self.action in ["create"]:
             return serializers.UserCreate
